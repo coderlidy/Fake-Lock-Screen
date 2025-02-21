@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">lockscreen</string>
+    <string name="accessibility_service_description">用于显示黑色悬浮窗遮罩</string>
 </resources>

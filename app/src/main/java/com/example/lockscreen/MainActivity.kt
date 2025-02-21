@@ -1,14 +1,13 @@
 package com.example.lockscreen
 
-import android.app.Activity
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -37,12 +36,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LockScreenContent() {
     val context = LocalContext.current
-    var hasOverlayPermission by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
-    
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        hasOverlayPermission = Settings.canDrawOverlays(context)
+    var isAccessibilityEnabled by remember { 
+        mutableStateOf(isAccessibilityServiceEnabled(context)) 
+    }
+
+    // 监听服务状态变化
+    DisposableEffect(Unit) {
+        val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+        val callback = AccessibilityManager.AccessibilityStateChangeListener { enabled ->
+            isAccessibilityEnabled = enabled
+        }
+        accessibilityManager.addAccessibilityStateChangeListener(callback)
+        
+        onDispose {
+            accessibilityManager.removeAccessibilityStateChangeListener(callback)
+        }
     }
 
     Column(
@@ -52,29 +60,28 @@ fun LockScreenContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (!hasOverlayPermission) {
-            Text("需要悬浮窗权限才能运行锁屏")
+        if (!isAccessibilityEnabled) {
+            Text("需要开启无障碍服务才能使用锁屏功能")
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${context.packageName}")
-                )
-                permissionLauncher.launch(intent)
-            }) {
-                Text("授权悬浮窗权限")
-            }
-        } else {
             Button(
                 onClick = {
-                    val serviceIntent = Intent(context, LockScreenService::class.java)
-                    context.startService(serviceIntent)
-                    (context as? Activity)?.moveTaskToBack(true)
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    context.startActivity(intent)
                 },
                 modifier = Modifier.width(200.dp)
             ) {
-                Text("启动锁屏")
+                Text("开启无障碍服务")
             }
+        } else {
+            Text("无障碍服务已启用，锁屏功能已激活")
+            Text("点击屏幕任意位置可关闭锁屏", 
+                modifier = Modifier.padding(top = 8.dp))
         }
     }
+}
+
+private fun isAccessibilityServiceEnabled(context: Context): Boolean {
+    val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
+    val installedServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
+    return installedServices.any { it.resolveInfo.serviceInfo.packageName == context.packageName }
 }
