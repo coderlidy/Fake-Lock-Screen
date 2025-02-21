@@ -93,7 +93,7 @@ class LockScreenAccessibilityService : AccessibilityService() {
         params.gravity = Gravity.TOP
 
         overlayView = View(this).apply {
-            setBackgroundColor(0xCC000000.toInt())
+            setBackgroundColor(0xFF000000.toInt())
             setOnClickListener {
                 hideOverlay()
             }
