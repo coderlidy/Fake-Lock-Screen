@@ -2,7 +2,8 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-[![GitHub stars](https://img.shields.io/github/stars/lee/fake-lock-screen.svg?style=social&label=Star)](https://github.com/lee/fake-lock-screen)
+![GitHub stars](https://img.shields.io/github/stars/coderlidy/Fake-Lock-Screen?style=social)
+[![Star History Chart](https://api.star-history.com/svg?repos=coderlidy/Fake-Lock-Screen&type=Date)](https://star-history.com/#coderlidy/Fake-Lock-Screen&Date)
 
 An innovative Android application that simulates screen locking through accessibility service.
 
