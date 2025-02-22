@@ -15,6 +15,11 @@ class LockScreenAccessibilityService : AccessibilityService() {
     private var overlayView: View? = null
     private var isOverlayShowing = false
     
+    // 用于记录点击相关数据
+    private var clickCount = 0
+    private var lastClickTime = 0L
+    private val CLICK_TIMEOUT = 500L // 点击超时时间（毫秒）
+    
     // 用于记录悬浮按钮的位置
     private var initialX: Int = 0
     private var initialY: Int = 0
@@ -71,7 +76,6 @@ class LockScreenAccessibilityService : AccessibilityService() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
@@ -80,8 +84,32 @@ class LockScreenAccessibilityService : AccessibilityService() {
 
         overlayView = View(this).apply {
             setBackgroundColor(0xFF000000.toInt())
-            isClickable = false
+            isClickable = true
             isFocusable = false
+            
+            setOnTouchListener { _, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastClickTime > CLICK_TIMEOUT) {
+                            // 如果距离上次点击超时，重置点击计数
+                            clickCount = 1
+                        } else {
+                            // 增加点击计数
+                            clickCount++
+                        }
+                        lastClickTime = currentTime
+                        
+                        // 检查是否达到三击
+                        if (clickCount >= 3) {
+                            hideOverlay()
+                            clickCount = 0
+                        }
+                        true
+                    }
+                    else -> true
+                }
+            }
         }
 
         try {
