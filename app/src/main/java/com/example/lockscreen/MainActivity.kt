@@ -74,8 +74,6 @@ fun LockScreenContent() {
             }
         } else {
             Text("无障碍服务已启用，锁屏功能已激活")
-            Text("点击屏幕任意位置可关闭锁屏", 
-                modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

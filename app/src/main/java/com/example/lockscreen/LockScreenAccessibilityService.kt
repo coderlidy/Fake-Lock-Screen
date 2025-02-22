@@ -87,16 +87,17 @@ class LockScreenAccessibilityService : AccessibilityService() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         )
         params.gravity = Gravity.TOP
 
         overlayView = View(this).apply {
             setBackgroundColor(0xFF000000.toInt())
-            setOnClickListener {
-                hideOverlay()
-            }
+            isClickable = false
+            isFocusable = false
         }
 
         try {
@@ -125,12 +126,12 @@ class LockScreenAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
-        hideOverlay()
+        // 不再取消遮罩
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        hideOverlay()
+        // 只移除浮动按钮，不取消遮罩
         floatButton?.let { windowManager?.removeView(it) }
     }
 }

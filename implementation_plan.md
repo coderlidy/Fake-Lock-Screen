@@ -1,51 +1,54 @@
-# 无障碍悬浮窗应用实现计划
+# 将遮罩移除操作改为双击触发
 
-## 1. 权限配置
-- AndroidManifest.xml中添加无障碍服务声明
-- 添加无障碍服务配置文件(accessibility_service_config.xml)
-- 声明必要的权限
+## 当前行为
+- 用户单击遮罩时，遮罩会被移除
+- 实现在 LockScreenService.kt 的 setupOverlay() 方法中
 
-## 2. 服务实现
-### 创建无障碍服务(LockScreenAccessibilityService)
-- 继承AccessibilityService
-- 实现必要的生命周期方法
-- 设置无障碍服务配置
+## 修改计划
 
-### 悬浮窗实现
-- 创建悬浮窗布局
-- 实现悬浮窗显示和控制逻辑
-- 添加触摸事件处理
+### 1. 修改 LockScreenService.kt
+- 添加 GestureDetector 成员变量
+- 创建 GestureDetector.SimpleOnGestureListener 子类来处理双击事件
+- 在 setupOverlay() 中：
+  - 初始化 GestureDetector
+  - 替换 setOnClickListener 为 setOnTouchListener
+  - 在 onTouch 事件中使用 GestureDetector 处理双击
 
-## 3. 主界面实现
-- 检查无障碍服务权限
-- 提供开启服务的引导按钮
-- 实现服务状态监听
+### 代码修改示例
+```kotlin
+// 添加成员变量
+private lateinit var gestureDetector: GestureDetector
 
-## 4. 代码结构
+// 在 setupOverlay() 中
+private fun setupOverlay() {
+    // 现有窗口参数设置保持不变...
+    
+    // 初始化手势检测器
+    gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onDoubleTap(e: MotionEvent): Boolean {
+            stopSelf()
+            return true
+        }
+    })
+
+    // 替换点击监听器为触摸监听器
+    overlayView?.setOnTouchListener { v, event ->
+        gestureDetector.onTouchEvent(event)
+        true
+    }
+}
 ```
-app/
-  ├── src/
-      ├── main/
-          ├── AndroidManifest.xml
-          ├── res/
-          │   ├── layout/
-          │   │   └── overlay_layout.xml
-          │   └── xml/
-          │       └── accessibility_service_config.xml
-          └── java/.../
-              ├── MainActivity.kt
-              └── LockScreenAccessibilityService.kt
-```
 
-## 5. 实现步骤
-1. 创建accessibility_service_config.xml
-2. 修改AndroidManifest.xml添加服务声明
-3. 实现LockScreenAccessibilityService
-4. 修改MainActivity适配无障碍服务
-5. 测试和优化
+## 优势
+1. 更安全的操作：双击比单击更不容易误触
+2. 符合用户体验：双击是常见的解锁手势
+3. 实现简单：使用 Android 内置的 GestureDetector 可靠且高效
 
-## 6. 注意事项
-- 确保无障碍服务的性能优化
-- 适当处理服务的生命周期
-- 提供清晰的用户引导
-- 处理各种异常情况
+## 测试计划
+1. 验证双击可以正确移除遮罩
+2. 验证单击不会触发移除
+3. 确认时间显示等其他功能正常工作
+
+## 后续建议
+- 考虑添加视觉或触觉反馈，在双击时提供用户反馈
+- 可以考虑添加设置选项，允许用户选择移除遮罩的方式（单击/双击）

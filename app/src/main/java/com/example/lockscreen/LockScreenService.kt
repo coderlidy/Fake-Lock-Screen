@@ -30,19 +30,25 @@ class LockScreenService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
+                    WindowManager.LayoutParams.FLAG_SECURE or
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
             PixelFormat.TRANSLUCENT
         )
         params.gravity = Gravity.TOP
 
-        overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null)
-        windowManager?.addView(overlayView, params)
-
-        // 设置点击事件来关闭悬浮窗
-        overlayView?.setOnClickListener {
-            stopSelf()
+        overlayView = LayoutInflater.from(this).inflate(R.layout.overlay_layout, null).apply {
+            isClickable = false
+            isFocusable = false
+            isLongClickable = false
+            isFocusableInTouchMode = false
+            isEnabled = false  // 禁用所有交互
         }
+        windowManager?.addView(overlayView, params)
     }
 
     private fun startTimeUpdates() {
@@ -64,6 +70,10 @@ class LockScreenService : Service() {
             windowManager?.removeView(overlayView)
         }
         super.onDestroy()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
