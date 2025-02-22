@@ -73,7 +73,18 @@ fun LockScreenContent() {
                 Text("开启无障碍服务")
             }
         } else {
-            Text("无障碍服务已启用，锁屏功能已激活")
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    "无障碍服务已启用，锁屏功能已激活",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text("点击悬浮锁屏按钮开启")
+                Text("点击屏幕任意位置5下关闭")
+            }
         }
     }
 }
