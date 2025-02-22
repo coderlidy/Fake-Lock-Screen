@@ -106,8 +106,8 @@ class LockScreenAccessibilityService : AccessibilityService() {
                         }
                         lastClickTime = currentTime
                         
-                        // 检查是否达到三击
-                        if (clickCount >= 3) {
+                        // 检查是否达到五击
+                        if (clickCount >= 5) {
                             hideOverlay()
                             clickCount = 0
                         }
