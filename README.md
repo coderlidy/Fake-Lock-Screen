@@ -2,11 +2,11 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-An innovative Android application that provides a quick and convenient way to lock your screen through an accessibility service.
+An innovative Android application that provides a quick and convenient way to simulate a locked screen through an accessibility service.
 
 ## Features
 
-- 🎯 Floating lock button with drag-and-drop functionality
+- 🎯 Floating fake lock button with drag-and-drop functionality
 - 🔓 Quick unlock with 5 taps anywhere on the screen
 - 🛡️ No root permission required
 - 🎨 Clean and intuitive user interface
@@ -31,20 +31,20 @@ An innovative Android application that provides a quick and convenient way to lo
 1. Download and install the APK
 2. Open the app and follow the on-screen instructions
 3. Enable accessibility service when prompted
-4. The floating lock button will appear on your screen
+4. The floating fake lock button will appear on your screen
 
 ## Usage
 
 ### Basic Operations
 
-1. **Lock Screen**: Tap the floating lock button
-2. **Unlock Screen**: Tap anywhere on the black overlay 5 times quickly
-3. **Move Lock Button**: Press and drag the floating button to any position
+1. **Fake Lock**: Tap the floating fake lock button
+2. **Unlock**: Tap anywhere on the black overlay 5 times quickly
+3. **Move Button**: Press and drag the floating button to any position
 4. **Disable Service**: Go to System Settings > Accessibility > Fake Lock Screen
 
 ### Advanced Features
 
-- Automatic screen lock based on accessibility events
+- Automatic fake lock based on accessibility events
 - Position memory for floating button
 - System-wide overlay support
 
@@ -55,7 +55,7 @@ An innovative Android application that provides a quick and convenient way to lo
 ```kotlin
 // Key components
 ├── MainActivity              // Main UI and service management
-├── LockScreenAccessibilityService  // Core locking functionality
+├── LockScreenAccessibilityService  // Core fake lock functionality
 ├── FloatButtonView          // Draggable floating button
 └── Resources               // Layouts and configurations
 ```
