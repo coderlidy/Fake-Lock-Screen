@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
+import kotlinx.coroutines.delay
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -40,16 +41,16 @@ fun LockScreenContent() {
         mutableStateOf(isAccessibilityServiceEnabled(context)) 
     }
 
-    // 监听服务状态变化
-    DisposableEffect(Unit) {
+    // 使用LaunchedEffect来定期检查服务状态
+    LaunchedEffect(Unit) {
         val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        val callback = AccessibilityManager.AccessibilityStateChangeListener { enabled ->
-            isAccessibilityEnabled = enabled
-        }
-        accessibilityManager.addAccessibilityStateChangeListener(callback)
         
-        onDispose {
-            accessibilityManager.removeAccessibilityStateChangeListener(callback)
+        while (true) {
+            val enabled = isAccessibilityServiceEnabled(context)
+            if (isAccessibilityEnabled != enabled) {
+                isAccessibilityEnabled = enabled
+            }
+            kotlinx.coroutines.delay(1000) // 每100毫秒检查一次
         }
     }
 
