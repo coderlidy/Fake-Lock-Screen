@@ -49,14 +49,15 @@ class LockScreenAccessibilityService : AccessibilityService() {
         params.y = 100
 
         floatButton = FloatButtonView(this).apply {
+            setInitialPosition(0, 100)
             setOnClickListener {
                 if (!isOverlayShowing) {
                     showOverlay()
                 }
             }
-            setOnPositionChangedListener { deltaX, deltaY ->
-                params.x = (params.x + deltaX).toInt()
-                params.y = (params.y + deltaY).toInt()
+            setOnPositionChangedListener { newX, newY ->
+                params.x = newX
+                params.y = newY
                 windowManager?.updateViewLayout(this, params)
             }
         }
