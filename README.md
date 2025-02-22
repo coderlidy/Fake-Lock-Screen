@@ -2,7 +2,9 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-An innovative Android application that provides a quick and convenient way to simulate a locked screen through an accessibility service.
+[![GitHub stars](https://img.shields.io/github/stars/lee/fake-lock-screen.svg?style=social&label=Star)](https://github.com/lee/fake-lock-screen)
+
+An innovative Android application that simulates screen locking through accessibility service.
 
 ## Features
 

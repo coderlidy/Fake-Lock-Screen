@@ -2,6 +2,8 @@
 
 [English](README.md) | [中文](README_zh.md)
 
+[![GitHub stars](https://img.shields.io/github/stars/lee/fake-lock-screen.svg?style=social&label=Star)](https://github.com/lee/fake-lock-screen)
+
 一款创新的安卓应用，通过无障碍服务提供快速便捷的伪锁屏功能。
 
 ## 功能特点
