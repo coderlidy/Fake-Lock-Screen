@@ -11,7 +11,7 @@ import android.view.accessibility.AccessibilityEvent
 
 class LockScreenAccessibilityService : AccessibilityService() {
     private var windowManager: WindowManager? = null
-    private var floatButton: View? = null
+    private var floatButton: FloatButtonView? = null
     private var overlayView: View? = null
     private var isOverlayShowing = false
     
@@ -43,32 +43,16 @@ class LockScreenAccessibilityService : AccessibilityService() {
         params.x = 0
         params.y = 100
 
-        floatButton = LayoutInflater.from(this).inflate(R.layout.float_button_layout, null)
-        floatButton?.setOnTouchListener { v, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    initialX = params.x
-                    initialY = params.y
-                    initialTouchX = event.rawX
-                    initialTouchY = event.rawY
-                    true
+        floatButton = FloatButtonView(this).apply {
+            setOnClickListener {
+                if (!isOverlayShowing) {
+                    showOverlay()
                 }
-                MotionEvent.ACTION_MOVE -> {
-                    params.x = initialX + (event.rawX - initialTouchX).toInt()
-                    params.y = initialY + (event.rawY - initialTouchY).toInt()
-                    windowManager?.updateViewLayout(floatButton, params)
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    if (Math.abs(event.rawX - initialTouchX) < 10 &&
-                        Math.abs(event.rawY - initialTouchY) < 10) {
-                        if (!isOverlayShowing) {
-                            showOverlay()
-                        }
-                    }
-                    true
-                }
-                else -> false
+            }
+            setOnPositionChangedListener { deltaX, deltaY ->
+                params.x = (params.x + deltaX).toInt()
+                params.y = (params.y + deltaY).toInt()
+                windowManager?.updateViewLayout(this, params)
             }
         }
 
