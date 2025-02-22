@@ -71,16 +71,22 @@ class LockScreenAccessibilityService : AccessibilityService() {
     private fun showOverlay() {
         if (isOverlayShowing) return
         
+        // 获取真实屏幕高度
+        val screenHeight = getRealScreenHeight()
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
+            screenHeight + getSystemWindowInsetTop() + getNavigationBarHeight(),
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
             PixelFormat.TRANSLUCENT
         )
-        params.gravity = Gravity.TOP
+        params.gravity = Gravity.TOP or Gravity.LEFT
+        params.y = -getSystemWindowInsetTop()
 
         overlayView = View(this).apply {
             setBackgroundColor(0xFF000000.toInt())
@@ -118,6 +124,30 @@ class LockScreenAccessibilityService : AccessibilityService() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun getSystemWindowInsetTop(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+    }
+
+    private fun getNavigationBarHeight(): Int {
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+    }
+
+    private fun getRealScreenHeight(): Int {
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        val metrics = windowManager?.currentWindowMetrics
+        return metrics?.bounds?.height() ?: 0
     }
 
     private fun hideOverlay() {
