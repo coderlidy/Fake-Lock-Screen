@@ -66,15 +66,8 @@ fun LockScreenContent() {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    try {
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_DETAILS_SETTINGS)
-                        intent.data = "package:${context.packageName}".toUri()
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        // Fallback for older versions or if the specific screen is not found
-                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                        context.startActivity(intent)
-                    }
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    context.startActivity(intent)
                 },
                 modifier = Modifier.width(200.dp)
             ) {
