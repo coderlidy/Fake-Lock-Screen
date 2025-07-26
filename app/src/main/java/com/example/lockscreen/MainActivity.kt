@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.lockscreen.ui.theme.LockscreenTheme
+import android.net.Uri
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,14 +45,12 @@ fun LockScreenContent() {
 
     // 使用LaunchedEffect来定期检查服务状态
     LaunchedEffect(Unit) {
-        val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-        
         while (true) {
             val enabled = isAccessibilityServiceEnabled(context)
             if (isAccessibilityEnabled != enabled) {
                 isAccessibilityEnabled = enabled
             }
-            kotlinx.coroutines.delay(1000) // 每100毫秒检查一次
+            delay(1000) // 每1秒检查一次
         }
     }
 
@@ -66,8 +66,15 @@ fun LockScreenContent() {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    context.startActivity(intent)
+                    try {
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_DETAILS_SETTINGS)
+                        intent.data = "package:${context.packageName}".toUri()
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        // Fallback for older versions or if the specific screen is not found
+                        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        context.startActivity(intent)
+                    }
                 },
                 modifier = Modifier.width(200.dp)
             ) {
