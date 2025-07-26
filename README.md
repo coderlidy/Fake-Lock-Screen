@@ -83,3 +83,18 @@ We welcome contributions! Please follow these steps:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Build Environment
+
+Here are the key versions used in this project's build environment:
+
+- **Gradle Version**: `8.13`
+- **Android Gradle Plugin Version**: `8.11.1`
+- **Kotlin Version**: `2.1.20`
+- **Java Version (Source & Target)**: `1.8` (Java 8)
+- **Compose Compiler Plugin Version**: `2.1.20`
+- **Compile SDK Version**: `35`
+- **Min SDK Version**: `35`
+- **Target SDK Version**: `35`
